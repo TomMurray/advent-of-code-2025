@@ -1,6 +1,15 @@
 
 module Main where
 
+-- Assuming max digits is 15
+divisor 1 = 111111111111111
+divisor 2 = 101010101010101
+divisor 3 = 001001001001001
+divisor 4 = 001000100010001
+divisor 5 = 000010000100001
+
+testDivisor l digits = divisor l `mod` (10 ^ digits)
+
 splitOn :: Eq a => a -> [a] -> [[a]]
 splitOn _ [] = []
 splitOn delimiter str =
@@ -15,19 +24,20 @@ parseRange s =
 ceilLog10 :: Integral n => n -> n
 ceilLog10 n = ceiling (logBase 10 (fromIntegral n))
 
--- Slow, dumb version
-getInvalidCounterPart :: Integral p => p -> p
-getInvalidCounterPart n =
-  let digits = ceilLog10 n `div` 2
-      multiplier = 10 ^ digits
-      half = n `div` multiplier
-      inv = half + half * multiplier
-  in inv
 isInvalid n =
-  even (ceilLog10 n) && getInvalidCounterPart n == n
+  let digits = ceilLog10 n
+  in even digits && n `mod` testDivisor (digits `div` 2) digits == 0
+
+isInvalidPart2 n =
+  let digits = ceilLog10 n
+      tests = filter (\n -> digits `mod` n == 0) [1..digits `div` 2]
+  in any (\t -> n `mod` testDivisor t digits == 0) tests
 
 countInvalidIDs start end =
   sum $ filter isInvalid [start..end]
+
+countInvalidIDsPart2 start end =
+  sum $ filter isInvalidPart2 [start..end]
 
 main :: IO ()
 main = do
@@ -41,3 +51,6 @@ main = do
     -- Part 1
     let invalidCounts = map (uncurry countInvalidIDs) ranges
     print (sum invalidCounts)
+
+    -- Part 2
+    print $ sum $ map (uncurry countInvalidIDsPart2) ranges
