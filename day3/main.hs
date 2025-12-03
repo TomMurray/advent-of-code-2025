@@ -20,7 +20,9 @@ main = do
 
   let maxJoltages = map (flip maxJoltage 2) banks
 
-  putStrLn $ "Part 1: " ++ show (sum maxJoltages)
+  putStrLn $ "Part 1: " ++ show (sum $ map (`maxJoltage` 2) banks)
+
+  putStrLn $ "Part 2: " ++ show (sum $ map (`maxJoltage` 12) banks)
 
 
 
