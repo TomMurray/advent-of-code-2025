@@ -10,10 +10,13 @@ argmax (x:xs) =
       -- N.B. >= to ensure we get the earliest instance of the max value
       if x >= maxs then (x, 0) else (maxs, idxs + 1)
 
+maxJoltage :: (Num a, Ord a) => [a] -> Int -> a
 maxJoltage _ 0 = 0
 maxJoltage l digits =
   let (val, idx) = argmax (take (length l - digits + 1) l)
   in val * 10 ^ (digits - 1) + maxJoltage (drop (idx + 1) l) (digits - 1)
+
+main :: IO ()
 main = do
   text <- readFile "input.txt"
   let banks = map (map digitToInt) (lines text)
