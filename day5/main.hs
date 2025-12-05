@@ -69,7 +69,6 @@ contains iset x =
       searchRight = (not (null right) && (x >= fst (head right)))
     in if searchRight then contains right x else contains left x
 
-
 main :: IO ()
 main = do
   text <- readFile "input.txt"
@@ -78,8 +77,6 @@ main = do
   -- Parse intervals
   let freshIntervals = map parseInterval fresh
   let availableItems = map read available :: [Integer]
-  print freshIntervals
-  print availableItems
 
 
   -- Construct an interval set of the intervals
@@ -87,4 +84,9 @@ main = do
 
   -- Part 1
   let availableAndFresh = length $ filter (contains intervalSet) availableItems
-  print availableAndFresh
+  putStrLn $ "Part 1: " ++ show availableAndFresh
+
+  -- Part 2
+  -- Just sum up the length of each interval in the set
+  let totalFresh = sum $ map (\(begin, end) -> end - begin + 1) intervalSet
+  putStrLn $ "Part 2: " ++ show totalFresh
