@@ -38,15 +38,22 @@ popcount :: [[Int]] -> Int
 popcount m =
   sum $ map (length . filter (== 1)) m
 
+singleIter (removed, m) =
+  let removableRolls = findRemovable m
+      count = popcount removableRolls
+      newM = zipWith (zipWith (-)) m removableRolls
+    in (removed + count, newM)
+
+nAndNM1 xs = zip xs (tail xs) 
+
 main :: IO ()
 main = do
-  text <- readFile "example.txt"
+  text <- readFile "input.txt"
 
   -- Map input lines to [[Int]]
   let rolls = map (map mapInputChar) $ lines text
 
-  let removableRolls = findRemovable rolls
-  let count = popcount removableRolls
+  let (count, _) = singleIter (0, rolls)
 
   -- Part 1
   putStrLn $ "Part 1: " ++ show count
@@ -54,5 +61,5 @@ main = do
   -- Part 2
   -- Iterate until a fixed point (no more rolls can be removed) and
   -- give the total number of rolls removed.
-
-  
+  let finalCount = fst . fst . head . dropWhile (uncurry (/=)) . nAndNM1 $ iterate singleIter (0, rolls)
+  putStrLn $ "Part 2: " ++ show finalCount
