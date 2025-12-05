@@ -1,7 +1,7 @@
 module Main where
 
 import Data.List (tails)
-import Distribution.Simple.Setup (replOptions)
+import Control.Monad (liftM2)
 
 mapInputChar :: Char -> Int
 mapInputChar c =
@@ -33,10 +33,16 @@ conv2D n l =
 
 main :: IO ()
 main = do
-  text <- readFile "example.txt"
+  text <- readFile "input.txt"
 
   -- Map input lines to [[Int]]
   let rolls = map (map mapInputChar) $ lines text
 
+  let surroundCount = conv2D 3 rolls 
+  let masked = zipWith (zipWith (*)) surroundCount rolls
+
+  let removableRolls = map (map (liftM2 (&&) (> 0) (<= 4))) masked
+  let count = sum $ map (length . filter id) removableRolls
+
   -- Now work out which rolls are surrounded by < 4 other rolls via sum pooling
-  print $ conv2D 3 rolls
+  print count
